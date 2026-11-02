@@ -1,0 +1,20 @@
+{
+  "name": "claimback-warranty-tracker",
+  "version": "1.0.0",
+  "description": "CLAIMBACK – Smart Warranty & Purchase Tracker Web Application",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/warranty.test.js"
+  },
+  "keywords": [
+    "warranty-tracker",
+    "claimback",
+    "purchase-manager",
+    "warranty-management"
+  ],
+  "author": "CLAIMBACK",
+  "license": "MIT"
+}

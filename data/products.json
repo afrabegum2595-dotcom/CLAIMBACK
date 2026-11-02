@@ -1,0 +1,34 @@
+[
+  {
+    "productId": "CB-0001",
+    "productName": "Sony WH-1000XM4",
+    "brand": "Sony",
+    "category": "Electronics",
+    "purchaseDate": "2025-01-10",
+    "warrantyDuration": 12,
+    "warrantyUnit": "MONTHS",
+    "purchasePrice": 299.99,
+    "serialNumber": "",
+    "seller": "",
+    "notes": "",
+    "receiptName": "",
+    "createdAt": "2026-11-02T18:41:13.508Z",
+    "updatedAt": "2026-11-02T18:41:13.508Z"
+  },
+  {
+    "productId": "CB-0002",
+    "productName": "Sony WH-1000XM4",
+    "brand": "Sony",
+    "category": "Electronics",
+    "purchaseDate": "2025-01-10",
+    "warrantyDuration": 12,
+    "warrantyUnit": "MONTHS",
+    "purchasePrice": 299.99,
+    "serialNumber": "",
+    "seller": "",
+    "notes": "",
+    "receiptName": "",
+    "createdAt": "2026-11-02T18:42:15.219Z",
+    "updatedAt": "2026-11-02T18:42:15.219Z"
+  }
+]
