@@ -1,7 +1,6 @@
 /**
- * CLAIMBACK Server
- * Standalone, lightweight HTTP server powered by Node.js built-in modules.
- * Zero external dependencies required.
+ * CLAIMBACK Server & API Handler
+ * Compatible with local Node.js server AND Vercel Serverless Functions.
  */
 
 const http = require('http');
@@ -14,9 +13,8 @@ const { calculateExpiryDate, calculateDaysRemaining, getWarrantyStatus } = requi
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const DATA_FILE = path.join(__dirname, 'data', 'products.json');
 
-const repo = new ProductRepository(DATA_FILE);
+const repo = new ProductRepository();
 const service = new ProductService(repo);
 
 // MIME types for static assets
@@ -42,10 +40,14 @@ function sendJSON(res, statusCode, data) {
 
 function parseBody(req) {
   return new Promise((resolve, reject) => {
+    // If body already parsed by Vercel
+    if (req.body && typeof req.body === 'object') {
+      return resolve(req.body);
+    }
+
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
-      // Guard against huge payloads (> 5MB)
       if (body.length > 5 * 1024 * 1024) {
         reject(new Error('Payload too large'));
       }
@@ -62,9 +64,10 @@ function parseBody(req) {
   });
 }
 
-const server = http.createServer(async (req, res) => {
-  const reqUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const pathname = reqUrl.pathname;
+async function handleRequest(req, res) {
+  const host = req.headers.host || 'localhost';
+  const reqUrl = new URL(req.url, `http://${host}`);
+  let pathname = reqUrl.pathname;
   const method = req.method.toUpperCase();
   const query = Object.fromEntries(reqUrl.searchParams);
 
@@ -76,6 +79,12 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Headers': 'Content-Type'
     });
     return res.end();
+  }
+
+  // Normalize /api path (in case rewrites omit or include prefix)
+  if (!pathname.startsWith('/api') && !pathname.includes('.')) {
+    // If routed directly to /stats or /products inside api/index.js
+    pathname = `/api${pathname}`;
   }
 
   // --- API ROUTES ---
@@ -139,11 +148,11 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 200, { success: true, message: 'Demo products removed.', data: stats });
       }
 
-      // 9. Live Calculator Endpoint: GET /api/calculate?purchaseDate=...&duration=...&unit=...
+      // 9. Live Calculator: GET /api/calculate
       if (pathname === '/api/calculate' && method === 'GET') {
         const { purchaseDate, duration, unit } = query;
         if (!purchaseDate || !duration) {
-          return sendJSON(res, 400, { success: false, message: 'Missing purchaseDate or duration query parameter.' });
+          return sendJSON(res, 400, { success: false, message: 'Missing purchaseDate or duration.' });
         }
         const expiryDate = calculateExpiryDate(purchaseDate, duration, unit || 'MONTHS');
         const daysRemaining = calculateDaysRemaining(expiryDate);
@@ -170,8 +179,7 @@ const server = http.createServer(async (req, res) => {
         return res.end(csvContent);
       }
 
-      // Route not found in API
-      return sendJSON(res, 404, { success: false, message: 'Endpoint not found' });
+      return sendJSON(res, 404, { success: false, message: 'API route not found' });
     } catch (err) {
       const statusCode = err.statusCode || 500;
       return sendJSON(res, statusCode, {
@@ -182,13 +190,12 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // --- STATIC FILE SERVING ---
+  // --- STATIC FILE SERVING (FOR LOCAL DEV) ---
   let filePath = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
   const ext = path.extname(filePath).toLowerCase();
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
-      // Fallback to index.html for SPA routing if requested non-api path
       const indexPath = path.join(PUBLIC_DIR, 'index.html');
       fs.readFile(indexPath, (readErr, content) => {
         if (readErr) {
@@ -205,7 +212,9 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': contentType });
     fs.createReadStream(filePath).pipe(res);
   });
-});
+}
+
+const server = http.createServer(handleRequest);
 
 if (require.main === module) {
   server.listen(PORT, () => {
@@ -217,4 +226,12 @@ if (require.main === module) {
   });
 }
 
-module.exports = server;
+function appHandler(req, res) {
+  return handleRequest(req, res);
+}
+appHandler.server = server;
+appHandler.listen = (...args) => server.listen(...args);
+appHandler.close = (...args) => server.close(...args);
+
+module.exports = appHandler;
+

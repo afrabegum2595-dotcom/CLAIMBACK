@@ -127,6 +127,15 @@
     setupTheme();
     setupMaxDateLimits();
     attachEventListeners();
+
+    // Instant local cache restore
+    const cached = getLocalCache();
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      state.products = cached;
+      renderProductsTable();
+      computeLocalStats(cached);
+    }
+
     await fetchDashboardStats();
     await fetchProducts();
 
@@ -136,6 +145,45 @@
       elements.calcPurchaseDate.value = todayStr;
       calculateStandaloneWarranty();
     }
+  }
+
+  function saveToLocalCache(products) {
+    try {
+      localStorage.setItem('claimback_products_cache', JSON.stringify(products));
+    } catch (_) {}
+  }
+
+  function getLocalCache() {
+    try {
+      const data = localStorage.getItem('claimback_products_cache');
+      return data ? JSON.parse(data) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function computeLocalStats(products) {
+    let active = 0, expiring = 0, expired = 0;
+    const upcoming = [];
+    const cats = new Set(['General']);
+
+    products.forEach(p => {
+      const days = calculateDaysDifference(p.expiryDate);
+      if (days < 0) expired++;
+      else if (days <= 30) { expiring++; upcoming.push(p); }
+      else active++;
+      if (p.category) cats.add(p.category);
+    });
+
+    state.stats = {
+      totalProducts: products.length,
+      activeCount: active,
+      expiringSoonCount: expiring,
+      expiredCount: expired,
+      upcomingExpirations: upcoming.slice(0, 5),
+      categories: Array.from(cats)
+    };
+    renderDashboard();
   }
 
   // --- HELPERS ---
@@ -278,12 +326,21 @@
       const json = await res.json();
       if (json.success) {
         state.products = json.data;
+        saveToLocalCache(json.data);
         renderProductsTable();
         updateCategoryDropdown();
       }
     } catch (err) {
       console.error('Failed to fetch products:', err);
-      showToast('Could not load products.', 'error');
+      // Fallback to cache if available
+      const cached = getLocalCache();
+      if (cached && cached.length > 0) {
+        state.products = cached;
+        renderProductsTable();
+        computeLocalStats(cached);
+      } else {
+        showToast('Could not load products.', 'error');
+      }
     }
   }
 

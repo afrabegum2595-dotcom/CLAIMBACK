@@ -2,6 +2,7 @@
  * Product Repository
  * Implements FR-08: local JSON persistence, automatic directory/file creation,
  * atomic save with backup, and resilient error recovery.
+ * Compatible with both local environments and Vercel serverless (/tmp fallback).
  */
 
 const fs = require('fs');
@@ -11,15 +12,49 @@ const { formatDateToISO } = require('../services/warrantyService');
 
 class ProductRepository {
   constructor(filePath) {
-    this.filePath = filePath || path.join(__dirname, '..', '..', 'data', 'products.json');
+    const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+    this.isCustomPath = Boolean(filePath);
+    
+    if (filePath) {
+      this.filePath = filePath;
+    } else if (isVercel) {
+      this.filePath = path.join('/tmp', 'products.json');
+    } else {
+      this.filePath = path.join(__dirname, '..', '..', 'data', 'products.json');
+    }
+
+    this.seedPath = path.join(__dirname, '..', '..', 'data', 'products.json');
     this.backupPath = `${this.filePath}.bak`;
     this.ensureDirectoryExists();
+    if (!this.isCustomPath) {
+      this.initializeSeedIfNeeded();
+    }
   }
 
   ensureDirectoryExists() {
-    const dir = path.dirname(this.filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    try {
+      const dir = path.dirname(this.filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    } catch (err) {
+      console.warn('[Repository] Could not ensure directory:', err.message);
+    }
+  }
+
+  initializeSeedIfNeeded() {
+    try {
+      // If running on Vercel /tmp and file does not exist yet, copy initial seed if available
+      if (this.filePath.startsWith('/tmp') && !fs.existsSync(this.filePath)) {
+        if (fs.existsSync(this.seedPath)) {
+          fs.copyFileSync(this.seedPath, this.filePath);
+        } else {
+          const demos = this.getDemoProducts();
+          this.saveAll(demos);
+        }
+      }
+    } catch (err) {
+      console.warn('[Repository] Seed initialization note:', err.message);
     }
   }
 
@@ -30,6 +65,14 @@ class ProductRepository {
   findAll() {
     try {
       if (!fs.existsSync(this.filePath)) {
+        // Fallback to seed path only if not a custom test path and seed exists
+        if (!this.isCustomPath && fs.existsSync(this.seedPath)) {
+          const content = fs.readFileSync(this.seedPath, 'utf-8').trim();
+          if (content) {
+            const raw = JSON.parse(content);
+            if (Array.isArray(raw)) return raw.map(i => new Product(i));
+          }
+        }
         return [];
       }
 
@@ -104,9 +147,7 @@ class ProductRepository {
    */
   getDemoProducts() {
     const today = new Date();
-    const pad = (n) => String(n).padStart(2, '0');
 
-    // Create relative dates based on today so statuses are always representative
     const dMinus18M = new Date(today);
     dMinus18M.setMonth(dMinus18M.getMonth() - 18);
 
@@ -118,9 +159,6 @@ class ProductRepository {
 
     const dMinus6M = new Date(today);
     dMinus6M.setMonth(dMinus6M.getMonth() - 6);
-
-    const dMinus24M = new Date(today);
-    dMinus24M.setMonth(dMinus24M.getMonth() - 24);
 
     return [
       new Product({
