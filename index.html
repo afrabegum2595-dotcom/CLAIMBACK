@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLAIMBACK – Smart Warranty & Purchase Tracker</title>
+  <meta name="description" content="Manage product purchases, calculate warranty end dates, and track expirations effortlessly.">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-wrapper" id="brand-home-btn" title="Go to Dashboard">
+      <div class="brand-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="brand-title-wrap">
+        <h1>CLAIMBACK <span class="brand-badge">PRO</span></h1>
+        <div class="brand-subtitle">Smart Warranty & Purchase Tracker</div>
+      </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="nav-tabs">
+      <button class="nav-btn active" data-view="dashboard" id="nav-dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect width="7" height="9" x="3" y="3" rx="1"/>
+          <rect width="7" height="5" x="14" y="3" rx="1"/>
+          <rect width="7" height="9" x="14" y="12" rx="1"/>
+          <rect width="7" height="5" x="3" y="16" rx="1"/>
+        </svg>
+        Dashboard
+      </button>
+
+      <button class="nav-btn" data-view="products" id="nav-products">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m7.5 4.27 9 5.15"/>
+          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+          <path d="m3.3 7 8.7 5 8.7-5"/>
+          <path d="M12 22V12"/>
+        </svg>
+        My Products
+      </button>
+
+      <button class="nav-btn" data-action="open-add-modal" id="nav-add">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8"/>
+          <path d="M8 12h8"/>
+        </svg>
+        Add Product
+      </button>
+
+      <button class="nav-btn" data-view="calculator" id="nav-calculator">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect width="16" height="20" x="4" y="2" rx="2"/>
+          <line x1="8" x2="16" y1="6" y2="6"/>
+          <line x1="16" x2="16" y1="14" y2="18"/>
+          <path d="M16 10h.01"/>
+          <path d="M12 10h.01"/>
+          <path d="M8 10h.01"/>
+          <path d="M12 14h.01"/>
+          <path d="M8 14h.01"/>
+          <path d="M12 18h.01"/>
+          <path d="M8 18h.01"/>
+        </svg>
+        Calculator
+      </button>
+
+      <button class="nav-btn" data-view="about" id="nav-about">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4"/>
+          <path d="M12 8h.01"/>
+        </svg>
+        About
+      </button>
+    </nav>
+
+    <!-- Header Tools -->
+    <div class="header-actions">
+      <button class="btn btn-secondary btn-sm" id="btn-demo-toggle" title="Load or clear realistic demo products">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+          <path d="M16 21h5v-5"/>
+        </svg>
+        <span id="demo-btn-label">Demo Data</span>
+      </button>
+
+      <button class="btn btn-secondary btn-sm" id="btn-export-csv" title="Export product registry to CSV file">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" x2="12" y1="15" y2="3"/>
+        </svg>
+        Export
+      </button>
+
+      <button class="btn-icon" id="theme-toggle" title="Toggle Light/Dark Theme">
+        <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2"/>
+          <path d="M12 20v2"/>
+          <path d="m4.93 4.93 1.41 1.41"/>
+          <path d="m17.66 17.66 1.41 1.41"/>
+          <path d="M2 12h2"/>
+          <path d="M20 12h2"/>
+          <path d="m6.34 17.66-1.41 1.41"/>
+          <path d="m19.07 4.93-1.41 1.41"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- VIEW 1: DASHBOARD -->
+    <section id="view-dashboard" class="app-view">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2>Warranty Overview</h2>
+          <p>Real-time health status of your registered consumer electronics & appliances.</p>
+        </div>
+        <button class="btn btn-primary" id="btn-dash-add-product">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" x2="12" y1="5" y2="19"/>
+            <line x1="5" x2="19" y1="12" y2="12"/>
+          </svg>
+          Add New Product
+        </button>
+      </div>
+
+      <!-- 4 Summary KPI Cards -->
+      <div class="stats-grid">
+        <div class="stat-card stat-total" data-filter="ALL">
+          <div class="stat-header">
+            <span class="stat-label">Total Registered</span>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m7.5 4.27 9 5.15"/>
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="kpi-total">0</div>
+          <div class="stat-desc">Products stored locally in CLAIMBACK</div>
+        </div>
+
+        <div class="stat-card stat-active" data-filter="ACTIVE">
+          <div class="stat-header">
+            <span class="stat-label">Active Warranties</span>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="kpi-active">0</div>
+          <div class="stat-desc">Healthy (> 30 days remaining)</div>
+        </div>
+
+        <div class="stat-card stat-expiring" data-filter="EXPIRING_SOON">
+          <div class="stat-header">
+            <span class="stat-label">Expiring Soon</span>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="kpi-expiring">0</div>
+          <div class="stat-desc">Needs attention (0 to 30 days remaining)</div>
+        </div>
+
+        <div class="stat-card stat-expired" data-filter="EXPIRED">
+          <div class="stat-header">
+            <span class="stat-label">Expired</span>
+            <div class="stat-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" x2="9" y1="9" y2="15"/>
+                <line x1="9" x2="15" y1="9" y2="15"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="kpi-expired">0</div>
+          <div class="stat-desc">Warranty coverage lapsed</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Banner -->
+      <div class="banner-cta">
+        <div class="banner-content">
+          <h3>Keep Your Invoices & Warranty Claims Safe</h3>
+          <p>Register your new purchases immediately. CLAIMBACK alerts you before warranties expire so you never miss repair claims.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" id="banner-btn-add">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v8"/>
+              <path d="M8 12h8"/>
+            </svg>
+            Add Product Record
+          </button>
+          <button class="btn btn-secondary" id="banner-btn-view">
+            View All Products
+          </button>
+        </div>
+      </div>
+
+      <!-- 2 Column Section: Upcoming Expirations & Category Breakdown -->
+      <div class="dashboard-columns">
+        <div class="card">
+          <div class="card-title-row">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Upcoming Expirations
+            </h3>
+            <span class="badge badge-tag" id="upcoming-count-badge">0 items</span>
+          </div>
+          <div id="upcoming-list-container" class="upcoming-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title-row">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3v18h18"/>
+                <path d="m19 9-5 5-4-4-3 3"/>
+              </svg>
+              Quick Summary & Rules
+            </h3>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.875rem;">
+            <div style="background: var(--bg-primary); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-weight: 600; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span class="badge status-active"><span class="badge-dot"></span> Active</span>
+                <span style="color: var(--text-muted); font-size: 0.8rem;">More than 30 days left</span>
+              </div>
+              <p style="color: var(--text-dim); font-size: 0.8rem;">Full manufacturer guarantee remains in effect.</p>
+            </div>
+
+            <div style="background: var(--bg-primary); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-weight: 600; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span class="badge status-expiring"><span class="badge-dot"></span> Expiring Soon</span>
+                <span style="color: var(--text-muted); font-size: 0.8rem;">0 to 30 days remaining</span>
+              </div>
+              <p style="color: var(--text-dim); font-size: 0.8rem;">Act now: inspect item for any flaws before coverage ends.</p>
+            </div>
+
+            <div style="background: var(--bg-primary); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-weight: 600; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span class="badge status-expired"><span class="badge-dot"></span> Expired</span>
+                <span style="color: var(--text-muted); font-size: 0.8rem;">Lapsed after end date</span>
+              </div>
+              <p style="color: var(--text-dim); font-size: 0.8rem;">Repairs are out-of-warranty or billable to owner.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: MY PRODUCTS (TABLE & CARDS) -->
+    <section id="view-products" class="app-view" style="display: none;">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2>Product Inventory</h2>
+          <p>Search, filter, view details, edit, or delete registered purchase records.</p>
+        </div>
+        <button class="btn btn-primary" id="btn-list-add-product">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" x2="12" y1="5" y2="19"/>
+            <line x1="5" x2="19" y1="12" y2="12"/>
+          </svg>
+          Add Product
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="filter-bar">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="text" id="input-search" placeholder="Search by name, brand, ID (e.g. CB-0001), or serial number..." autocomplete="off">
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-pills" id="status-filter-pills">
+            <button class="filter-pill active" data-status="ALL">All</button>
+            <button class="filter-pill" data-status="ACTIVE">Active</button>
+            <button class="filter-pill" data-status="EXPIRING_SOON">Expiring Soon</button>
+            <button class="filter-pill" data-status="EXPIRED">Expired</button>
+          </div>
+
+          <select id="select-category" class="select-control">
+            <option value="ALL">All Categories</option>
+          </select>
+
+          <select id="select-sort" class="select-control">
+            <option value="expiryDate-asc">Nearest Expiry Date</option>
+            <option value="expiryDate-desc">Furthest Expiry Date</option>
+            <option value="daysRemaining-asc">Days Remaining (Asc)</option>
+            <option value="productName-asc">Name (A-Z)</option>
+            <option value="purchaseDate-desc">Purchase Date (Newest)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Table View -->
+      <div class="table-container">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="productId">Product ID</th>
+              <th class="sortable" data-sort="productName">Product Name</th>
+              <th class="sortable" data-sort="brand">Brand</th>
+              <th>Category</th>
+              <th class="sortable" data-sort="purchaseDate">Purchase Date</th>
+              <th class="sortable" data-sort="expiryDate">Warranty End</th>
+              <th class="sortable" data-sort="daysRemaining">Days Left</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-table-body">
+            <!-- Rows injected by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div id="products-empty-state" class="empty-state" style="display: none;">
+        <div class="empty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+          </svg>
+        </div>
+        <h3 id="empty-state-title">No Products Found</h3>
+        <p id="empty-state-desc">You haven't added any products yet, or no products match your active search filters.</p>
+        <button class="btn btn-primary" id="btn-empty-add">Add Your First Product</button>
+      </div>
+    </section>
+
+    <!-- VIEW 3: WARRANTY CALCULATOR -->
+    <section id="view-calculator" class="app-view" style="display: none;">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2>Warranty Date Calculator</h2>
+          <p>Test purchase dates and durations on the fly without saving permanent records.</p>
+        </div>
+      </div>
+
+      <div style="max-width: 640px; margin: 0 auto;" class="card">
+        <form id="calc-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label" for="calc-purchase-date">Purchase Date <span class="required">*</span></label>
+            <input type="date" id="calc-purchase-date" class="form-control" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="calc-duration">Warranty Duration <span class="required">*</span></label>
+              <input type="number" id="calc-duration" class="form-control" min="1" value="12" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="calc-unit">Unit <span class="required">*</span></label>
+              <select id="calc-unit" class="form-control">
+                <option value="MONTHS" selected>Months</option>
+                <option value="YEARS">Years</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Live Calculator Result Box -->
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Calculated Warranty Expiry Date:</span>
+              <span id="calc-result-date" style="font-size: 1.15rem; font-weight: 700;">--</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Days Remaining:</span>
+              <span id="calc-result-days" style="font-size: 1rem; font-weight: 600;">--</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Status Classification:</span>
+              <span id="calc-result-status" class="badge">--</span>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" id="btn-calc-convert-to-product">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" x2="12" y1="5" y2="19"/>
+              <line x1="5" x2="19" y1="12" y2="12"/>
+            </svg>
+            Save This Product to Inventory
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 4: ABOUT -->
+    <section id="view-about" class="app-view" style="display: none;">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2>About CLAIMBACK</h2>
+          <p>Product specifications, technical architecture, and student mini-project deliverables.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="about-grid">
+        <div class="card">
+          <div class="card-title-row">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Project Specifications
+            </h3>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            <strong>CLAIMBACK</strong> is a Smart Warranty & Purchase Tracker engineered to maintain local, verifiable records of retail purchases and accurately compute warranty expiry timelines without requiring cloud accounts, external APIs, or recurring fees.
+          </p>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+            <li style="display: flex; gap: 0.5rem; align-items: center;">
+              <strong style="color: var(--primary);">Domain:</strong> Consumer Electronics & Retail Asset Tracking
+            </li>
+            <li style="display: flex; gap: 0.5rem; align-items: center;">
+              <strong style="color: var(--primary);">Storage Mode:</strong> Local JSON file (<code style="background: var(--bg-primary); padding: 0.1rem 0.35rem; border-radius: 4px;">data/products.json</code>) with automatic backup
+            </li>
+            <li style="display: flex; gap: 0.5rem; align-items: center;">
+              <strong style="color: var(--primary);">ID Sequence:</strong> Formatted auto-incrementing <code style="background: var(--bg-primary); padding: 0.1rem 0.35rem; border-radius: 4px;">CB-0001</code>
+            </li>
+            <li style="display: flex; gap: 0.5rem; align-items: center;">
+              <strong style="color: var(--primary);">Offline Status:</strong> 100% self-contained, zero internet dependencies
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title-row">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+              Dual Implementation Deliverable
+            </h3>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            To satisfy both modern web application requirements and the Core Java / Swing mini-project PRD specifications, CLAIMBACK includes both:
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+            <div style="background: var(--bg-primary); padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-weight: 700; color: var(--primary);">1. Modern Web Application</div>
+              <p style="color: var(--text-dim); margin-top: 0.2rem;">Lightweight zero-dependency Node.js HTTP backend, REST API, responsive UI, live date preview, CSV export.</p>
+            </div>
+            <div style="background: var(--bg-primary); padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div style="font-weight: 700; color: #10b981;">2. Core Java Swing Desktop App</div>
+              <p style="color: var(--text-dim); margin-top: 0.2rem;">Modular Java code located in <code style="background: var(--bg-card); padding: 0.1rem 0.35rem; border-radius: 4px;">java-swing-version/src</code> with <code style="background: var(--bg-card); padding: 0.1rem 0.35rem; border-radius: 4px;">MainFrame</code>, <code style="background: var(--bg-card); padding: 0.1rem 0.35rem; border-radius: 4px;">ProductService</code>, and <code style="background: var(--bg-card); padding: 0.1rem 0.35rem; border-radius: 4px;">WarrantyService</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD / EDIT PRODUCT -->
+  <div class="modal-overlay" id="modal-product-form">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="form-modal-title">Add New Product</h3>
+        <button class="btn-icon" data-action="close-modal" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" x2="6" y1="6" y2="18"/>
+            <line x1="6" x2="18" y1="6" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="product-form" novalidate>
+        <div class="modal-body">
+          <input type="hidden" id="form-product-id">
+
+          <div class="form-grid">
+            <!-- Product Name -->
+            <div class="form-group full-width">
+              <label class="form-label" for="form-name">Product Name <span class="required">*</span></label>
+              <input type="text" id="form-name" class="form-control" placeholder="e.g. MacBook Air M3, Sony OLED TV" required>
+              <span class="form-error" id="err-name"></span>
+            </div>
+
+            <!-- Brand -->
+            <div class="form-group">
+              <label class="form-label" for="form-brand">Brand / Manufacturer <span class="required">*</span></label>
+              <input type="text" id="form-brand" class="form-control" placeholder="e.g. Apple, Sony, Samsung" required>
+              <span class="form-error" id="err-brand"></span>
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+              <label class="form-label" for="form-category">Category</label>
+              <input list="category-suggestions" id="form-category" class="form-control" placeholder="Select or type category">
+              <datalist id="category-suggestions">
+                <option value="Electronics">
+                <option value="Appliances">
+                <option value="Audio & Sound">
+                <option value="Computers & Laptops">
+                <option value="Smartphones">
+                <option value="Home & Kitchen">
+                <option value="Automotive">
+                <option value="Personal Care">
+                <option value="Tools & Hardware">
+              </datalist>
+              <span class="form-error" id="err-category"></span>
+            </div>
+
+            <!-- Purchase Date -->
+            <div class="form-group">
+              <label class="form-label" for="form-purchase-date">Purchase Date <span class="required">*</span></label>
+              <input type="date" id="form-purchase-date" class="form-control" required>
+              <span class="form-error" id="err-purchase-date"></span>
+            </div>
+
+            <!-- Duration & Unit -->
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div>
+                <label class="form-label" for="form-warranty-duration">Duration <span class="required">*</span></label>
+                <input type="number" id="form-warranty-duration" class="form-control" min="1" value="12" required>
+              </div>
+              <div>
+                <label class="form-label" for="form-warranty-unit">Unit <span class="required">*</span></label>
+                <select id="form-warranty-unit" class="form-control">
+                  <option value="MONTHS">Months</option>
+                  <option value="YEARS">Years</option>
+                </select>
+              </div>
+              <span class="form-error" id="err-warranty-duration" style="grid-column: 1 / -1;"></span>
+            </div>
+
+            <!-- Live Expiry Preview Box -->
+            <div class="warranty-preview-box">
+              <div>
+                <div class="preview-label">Calculated Expiry Date</div>
+                <div class="preview-date" id="form-preview-date">--</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="preview-label">Estimated Status</div>
+                <div id="form-preview-status"><span class="badge">--</span></div>
+              </div>
+            </div>
+
+            <!-- Purchase Price -->
+            <div class="form-group">
+              <label class="form-label" for="form-price">Purchase Price ($)</label>
+              <input type="number" id="form-price" class="form-control" min="0" step="0.01" placeholder="e.g. 999.00">
+              <span class="form-error" id="err-price"></span>
+            </div>
+
+            <!-- Serial Number -->
+            <div class="form-group">
+              <label class="form-label" for="form-serial">Serial Number / IMEI</label>
+              <input type="text" id="form-serial" class="form-control" placeholder="e.g. SN-882941-X">
+              <span class="form-error" id="err-serial"></span>
+            </div>
+
+            <!-- Store / Seller -->
+            <div class="form-group full-width">
+              <label class="form-label" for="form-seller">Store / Retailer</label>
+              <input type="text" id="form-seller" class="form-control" placeholder="e.g. Best Buy, Amazon, Apple Store">
+              <span class="form-error" id="err-seller"></span>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group full-width">
+              <label class="form-label" for="form-notes">Notes & Coverage Details</label>
+              <textarea id="form-notes" class="form-control" rows="2" placeholder="e.g. Extended warranty certificate in desk drawer; includes accidental damage."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-product">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PRODUCT DETAILS VIEW -->
+  <div class="modal-overlay" id="modal-product-details">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span class="product-id-cell" id="details-product-id">CB-0000</span>
+          <h3 id="details-product-name">Product Details</h3>
+        </div>
+        <button class="btn-icon" data-action="close-modal" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" x2="6" y1="6" y2="18"/>
+            <line x1="6" x2="18" y1="6" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Visual Timeline -->
+        <div class="warranty-timeline">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Warranty Timeline</span>
+            <span id="details-status-badge" class="badge">--</span>
+          </div>
+
+          <div class="timeline-progress-bg">
+            <div id="details-progress-bar" class="timeline-progress-bar" style="width: 50%; background: #3b82f6;"></div>
+          </div>
+
+          <div class="timeline-labels">
+            <span>Purchased: <strong id="details-timeline-purchased" style="color: var(--text-main);">--</strong></span>
+            <span id="details-timeline-days-label" style="font-weight: 600;">--</span>
+            <span>Expires: <strong id="details-timeline-expires" style="color: var(--text-main);">--</strong></span>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+          <div>
+            <span style="color: var(--text-dim); display: block; font-size: 0.75rem;">Brand / Manufacturer</span>
+            <strong id="details-brand">--</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-dim); display: block; font-size: 0.75rem;">Category</span>
+            <strong id="details-category">--</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-dim); display: block; font-size: 0.75rem;">Warranty Term</span>
+            <strong id="details-duration">--</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-dim); display: block; font-size: 0.75rem;">Purchase Price</span>
+            <strong id="details-price">--</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-dim); display: block; font-size: 0.75rem;">Serial Number</span>
+            <strong id="details-serial" style="font-family: monospace;">--</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-dim); display: block; font-size: 0.75rem;">Seller / Retailer</span>
+            <strong id="details-seller">--</strong>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <span style="color: var(--text-dim); display: block; font-size: 0.75rem;">Notes & Coverage</span>
+            <p id="details-notes" style="background: var(--bg-primary); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-top: 0.25rem;">--</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button type="button" class="btn btn-danger btn-sm" id="btn-details-delete">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+          </svg>
+          Delete Product
+        </button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn btn-secondary" data-action="close-modal">Close</button>
+          <button type="button" class="btn btn-primary" id="btn-details-edit">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+              <path d="m15 5 4 4"/>
+            </svg>
+            Edit Record
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DELETE CONFIRMATION -->
+  <div class="modal-overlay" id="modal-delete-confirm">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 style="color: var(--danger);">Confirm Deletion</h3>
+        <button class="btn-icon" data-action="close-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 0.75rem;">Are you sure you want to delete this product record?</p>
+        <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.85rem;">
+          <strong id="delete-confirm-name" style="color: var(--text-main);">Product Name</strong>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;" id="delete-confirm-id">CB-0000</div>
+        </div>
+        <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 0.75rem;">This action permanently removes the record from local storage.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="close-modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete-action">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    CLAIMBACK &bull; Smart Warranty & Purchase Tracker &bull; Local & Offline Ready
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

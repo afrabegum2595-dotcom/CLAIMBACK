@@ -4,17 +4,16 @@
   "description": "CLAIMBACK – Smart Warranty & Purchase Tracker Web Application",
   "main": "server.js",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node --test tests/warranty.test.js"
+    "test": "node --test tests/warranty.test.js tests/api.test.js",
+    "vercel-build": "echo 'No build step required'"
   },
-  "keywords": [
-    "warranty-tracker",
-    "claimback",
-    "purchase-manager",
-    "warranty-management"
-  ],
+  "keywords": ["warranty-tracker", "claimback", "purchase-manager"],
   "author": "CLAIMBACK",
   "license": "MIT"
 }
